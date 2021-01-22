@@ -23,7 +23,14 @@ class Carro {
     this.historial = [];
     this.tiempo = 0;
     this.timer = setInterval(this.mover, 500);
-    this.mapaActivado = false;
+    this.pausa = false;
+    this.map = NaN;
+    this.route = [];
+    this.ubicacion = 0;
+    this.parabrisas = false;
+    this.derecha = false;
+    this.izquierda = false;
+    this.volanteP = "centro";
   }
   acelerar = async () => {
     if (!this.frenoMano) {
@@ -56,7 +63,7 @@ class Carro {
         (this.frenando
           ? 4 * this.aceleracion - 1
           : this.aceleracion + this.desaceleracion) *
-          0.5;
+        0.5;
       if (this.velocidad > this.topeVelocidad) {
         this.velocidad = this.topeVelocidad;
       }
@@ -82,7 +89,7 @@ class Carro {
         this.velocidad =
           this.velocidad +
           (this.frenando ? 4 * this.desaceleracion - 1 : this.desaceleracion) *
-            0.5;
+          0.5;
         if (this.velocidad < 0) {
           this.velocidad = 0;
         }
@@ -91,7 +98,7 @@ class Carro {
         this.velocidad =
           this.velocidad -
           (this.frenando ? 4 * this.desaceleracion + 1 : this.desaceleracion) *
-            0.5;
+          0.5;
         if (this.velocidad > 0) {
           this.velocidad = 0;
         }
@@ -105,7 +112,7 @@ class Carro {
             (this.frenando
               ? 4 * this.desaceleracion - 1
               : this.desaceleracion + this.aceleracion) *
-              0.5;
+            0.5;
           if (this.velocidad < 0) {
             this.velocidad = 0;
           }
@@ -115,7 +122,7 @@ class Carro {
             (this.frenando
               ? 4 * this.aceleracion + 1
               : this.aceleracion + this.desaceleracion) *
-              0.5;
+            0.5;
           if (this.velocidad > 0) {
             this.velocidad = 0;
           }
@@ -141,7 +148,7 @@ class Carro {
       this.velocidad =
         this.velocidad -
         (this.frenando ? 4 * this.desaceleracion + 0.5 : this.desaceleracion) *
-          0.5;
+        0.5;
       if (this.velocidad > 0) {
         this.velocidad = 0;
       }
@@ -213,7 +220,7 @@ class Carro {
     } else {
       this.marcha = 0;
     }
-    
+
     /* else if (this.palanca == 2) {
        else {
         this.palanca = aux;
@@ -251,6 +258,12 @@ class Carro {
       this.palanca -= 3;
     }
     */
+    if (this.palanca > 1) {
+      this.palanca--;
+    } else {
+      this.palanca = this.palanca;
+    }
+
     this.cambiarMarcha(aux);
 
     for (let i = 1; i <= 4; i++) {
@@ -261,20 +274,20 @@ class Carro {
       }
     }
 
-    let positions = ['Parking','Reversa','Drive','Neutro'];
+    let positions = ["Parking", "Reversa", "Neutro", "Drive"];
 
     if (this.palanca != aux) {
       return escribir(
         "Se movio la palanca de cambios a la posicion: " +
-          positions[this.palanca - 1] 
+        positions[this.palanca - 1]
       );
     }
   };
 
   bajarPalanca = async () => {
     let aux = this.palanca;
-   
-   /* if (this.palanca < 7) {
+
+    /* if (this.palanca < 7) {
       if (this.palanca == 6) {
         if (this.velocidad == 0) {
           this.palanca += 3;
@@ -286,8 +299,13 @@ class Carro {
       }
     }*/
 
-    this.cambiarMarcha(aux);
+    if (this.palanca < 4) {
+      this.palanca++;
+    } else {
+      this.palanca = this.palanca;
+    }
 
+    this.cambiarMarcha(aux);
 
     for (let i = 1; i <= 4; i++) {
       if (this.palanca == i) {
@@ -297,12 +315,12 @@ class Carro {
       }
     }
 
-    let positions = ['Parking','Reversa','Drive','Neutro']
+    let positions = ["Parking", "Reversa", "Neutro", "Drive"];
 
     if (this.palanca != aux) {
       return escribir(
         "Se movio la palanca de cambios a la posicion: " +
-          positions[this.palanca - 1]
+        positions[this.palanca - 1]
       );
     }
   };
@@ -414,7 +432,6 @@ class Carro {
     }
   };
 
-
   dejarFreno = async () => {
     if (this.frenando) {
       if (this.velocidad >= 0 && this.marcha > 0) {
@@ -440,29 +457,34 @@ class Carro {
     }
     this.frenando = false;
   };
-  
-  verMapa = async () => {
-    if (this.mapaActivado) {
-      document.getElementById("KeyP").style.backgroundColor = "red";
 
-      var overlay = document.getElementById(`overlay`);
-      var popup = document.getElementById(`popup`);
 
-      overlay.classList.add("active");
-      popup.classList.add("active");
-
-      return escribir("mapa activado");
+  dirIzquierda = async () => {
+    this.izquierda = !this.izquierda;
+    if (this.izquierda) {
+      document.getElementById("KeyZ").style.backgroundColor = "red";
+      pintar('Se encendio la direccional izquierda');
     } else {
-      (e) => {
-        e.preventDefault();
-        overlay.classList.remove("active");
-        popup.classList.remove("active");
-      };
-
-      document.getElementById("KeyP").style.backgroundColor = "white";
-      return escribir("mapa cerrado");
+      document.getElementById("KeyZ").style.backgroundColor = "white";
+      pintar('Se apago la direccional izquierda');
     }
-  };
+  }
+  dirDerecha = async () => {
+    this.derecha = !this.derecha;
+    if (this.derecha) {
+      document.getElementById("KeyC").style.backgroundColor = "red";
+      pintar('Se encendio la direccional derecha');
+    } else {
+      document.getElementById("KeyC").style.backgroundColor = "white";
+      pintar('Se apago la direccional derecha');
+    }
+  }
+  volante = async (direccion) => {
+    if (this.volanteP != direccion) {
+      pintar('Se giro el volante hacia ' + direccion);
+    }
+    this.volanteP = direccion;
+  }
 }
 
 let x;
@@ -497,7 +519,7 @@ window.addEventListener("keydown", async (event) => {
     ) {
       document.getElementById(event.code).style.backgroundColor = "red";
     }
-  } catch (err) {}
+  } catch (err) { }
   if (event.keyCode == 13) {
     return x.encender();
   }
@@ -513,10 +535,10 @@ window.addEventListener("keydown", async (event) => {
         document.getElementById("KeyW").style.backgroundColor = "white";
         return escribir("Suelte primero el Freno");
       }
-    }
+    }/*
     if (event.keyCode == 69) {
       return x.pisarClutch();
-    }
+    }*/
     if (event.keyCode == 83) {
       if (document.getElementById("KeyW").style.backgroundColor != "red") {
         return x.frenar();
@@ -525,66 +547,63 @@ window.addEventListener("keydown", async (event) => {
         return escribir("Suelte primero el acelerador");
       }
     }
-    if (event.keyCode == 80) {
-      x.mapaActivado = !x.mapaActivado;
-      return x.verMapa();
-    }
+    
   } else {
     if (
       !(
         event.keyCode == 13 ||
         event.keyCode == 77 ||
         event.keyCode == 38 ||
-        event.keyCode == 39 ||
-        event.keyCode == 40 ||
-        event.keyCode == 37
+        event.keyCode == 40
       )
     ) {
       return escribir("Debes encender el carro antes");
     }
   }
   //Cambios
-  if (x.Clutch || !x.encendido) {
-    if (event.keyCode == 38) {
-      return x.subirPalanca();
-    }
-
-    if (event.keyCode == 40) {
-      return x.bajarPalanca();
-    }
-
-    if (event.keyCode == 39) {
-      return x.derechaPalanca();
-    }
-
-    if (event.keyCode == 37) {
-      return x.izquierdaPalanca();
-    }
-  } else {
-    if (event.keyCode == 38) {
-      return escribir(
-        "Para hacer un cambio el carro debe estar apagado o con el Clutch activado"
-      );
-    }
-
-    if (event.keyCode == 40) {
-      return escribir(
-        "Para hacer un cambio el carro debe estar apagado o con el Clutch activado"
-      );
-    }
-
-    if (event.keyCode == 39) {
-      return escribir(
-        "Para hacer un cambio el carro debe estar apagado o con el Clutch activado"
-      );
-    }
-
-    if (event.keyCode == 37) {
-      return escribir(
-        "Para hacer un cambio el carro debe estar apagado o con el Clutch activado"
-      );
-    }
+  if (event.keyCode == 38) {
+    return x.subirPalanca();
   }
+
+  if (event.keyCode == 40) {
+    return x.bajarPalanca();
+  }
+  /*   
+   if (x.Clutch || !x.encendido) {
+     
+ 
+     if (event.keyCode == 39) {
+       return x.derechaPalanca();
+     }
+ 
+     if (event.keyCode == 37) {
+       return x.izquierdaPalanca();
+     }
+   } else {
+     if (event.keyCode == 38) {
+       return escribir(
+         "Para hacer un cambio el carro debe estar apagado o con el Clutch activado"
+       );
+     }
+ 
+     if (event.keyCode == 40) {
+       return escribir(
+         "Para hacer un cambio el carro debe estar apagado o con el Clutch activado"
+       );
+     }
+ 
+     if (event.keyCode == 39) {
+       return escribir(
+         "Para hacer un cambio el carro debe estar apagado o con el Clutch activado"
+       );
+     }
+ 
+     if (event.keyCode == 37) {
+       return escribir(
+         "Para hacer un cambio el carro debe estar apagado o con el Clutch activado"
+       );
+     }
+   }*/
 });
 //Soltar tecla
 
@@ -598,13 +617,13 @@ window.addEventListener("keyup", async (event) => {
     ) {
       document.getElementById(event.code).style.backgroundColor = "white";
     }
-  } catch (err) {}
+  } catch (err) { }
   if (event.keyCode == 87) {
     x.dejarAcelerar();
-  }
+  }/*
   if (event.keyCode == 69) {
     x.dejarClutch();
-  }
+  }*/
   if (event.keyCode == 83) {
     x.dejarFreno();
   }

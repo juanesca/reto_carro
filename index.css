@@ -158,22 +158,22 @@ input {
   grid-column: 4/5;
 }
 
-#BN {
+#BR {
   grid-row: 3/4;
   grid-column: 4/5;
 }
 
-#BD {
+#BN {
   grid-row: 5/6;
   grid-column: 4/5;
 }
 
-#BR {
+#BD {
   grid-row: 7/8;
   grid-column: 4/5;
 }
 
-#Panel {
+#Panel, #Panel2 {
   background-color: rgba(255, 255, 255, 0.8);
   z-index: 9999999;
   position: absolute;
@@ -188,6 +188,8 @@ input {
   overflow-wrap: break-word;
   overflow: hidden;
 }
+
+
 #Velocidad {
   background-color: rgba(255, 255, 255, 0.8);
   text-align: center;
